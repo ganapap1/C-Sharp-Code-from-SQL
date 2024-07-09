@@ -1,0 +1,4 @@
+How to Execute this stored procedure
+EXEC [dbo].[GenerateCSharpCode]
+	@TableName ='SalesOrdersSheet', 
+	@DatabaseName = 'SuperStoreDB'
