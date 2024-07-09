@@ -1,0 +1,159 @@
+CodeLine
+// TextBox Names:
+txtID
+txtBillNumber
+txtBillDateDateFormat
+txtBillDate
+txtProcuredDate
+txtSalesChannel
+txtWarehouseCode
+txtShipDate
+txtDeliveryDate
+txtCurrencyCode
+txtSalesTeamID
+txtCustomerID
+txtStoreID
+txtProductID
+txtOrderQuantity
+txtDiscountApplied
+txtUnitPrice
+txtUnitCost
+txtGrossSales
+txtDiscountAmt
+txtNetSales
+txtCostofSales
+
+// TextBox Reset Code:
+txtID.Text = "0";
+txtBillNumber.Text = string.Empty;
+txtBillDateDateFormat.Text = string.Empty;
+txtBillDate.Text = string.Empty;
+txtProcuredDate.Text = string.Empty;
+txtSalesChannel.Text = string.Empty;
+txtWarehouseCode.Text = string.Empty;
+txtShipDate.Text = string.Empty;
+txtDeliveryDate.Text = string.Empty;
+txtCurrencyCode.Text = string.Empty;
+txtSalesTeamID.Text = string.Empty;
+txtCustomerID.Text = string.Empty;
+txtStoreID.Text = string.Empty;
+txtProductID.Text = string.Empty;
+txtOrderQuantity.Text = string.Empty;
+txtDiscountApplied.Text = string.Empty;
+txtUnitPrice.Text = string.Empty;
+txtUnitCost.Text = string.Empty;
+txtGrossSales.Text = string.Empty;
+txtDiscountAmt.Text = string.Empty;
+txtNetSales.Text = string.Empty;
+txtCostofSales.Text = string.Empty;
+
+// Insert Query Columns:
+ID, BillNumber, BillDateDateFormat, BillDate, ProcuredDate, SalesChannel, WarehouseCode, ShipDate, DeliveryDate, CurrencyCode, SalesTeamID, CustomerID, StoreID, ProductID, OrderQuantity, DiscountApplied, UnitPrice, UnitCost, GrossSales, DiscountAmt, NetSales, CostofSales
+
+// Insert Query Value:
+@ID, @BillNumber, @BillDateDateFormat, @BillDate, @ProcuredDate, @SalesChannel, @WarehouseCode, @ShipDate, @DeliveryDate, @CurrencyCode, @SalesTeamID, @CustomerID, @StoreID, @ProductID, @OrderQuantity, @DiscountApplied, @UnitPrice, @UnitCost, @GrossSales, @DiscountAmt, @NetSales, @CostofSales
+
+// Update Query Columns:
+ID = @ID, BillNumber = @BillNumber, BillDateDateFormat = @BillDateDateFormat, BillDate = @BillDate, ProcuredDate = @ProcuredDate, SalesChannel = @SalesChannel, WarehouseCode = @WarehouseCode, ShipDate = @ShipDate, DeliveryDate = @DeliveryDate, CurrencyCode = @CurrencyCode, SalesTeamID = @SalesTeamID, CustomerID = @CustomerID, StoreID = @StoreID, ProductID = @ProductID, OrderQuantity = @OrderQuantity, DiscountApplied = @DiscountApplied, UnitPrice = @UnitPrice, UnitCost = @UnitCost, GrossSales = @GrossSales, DiscountAmt = @DiscountAmt, NetSales = @NetSales, CostofSales = @CostofSales
+
+// All Columns Initialization Code:
+int selectedID = int.Parse(txtID.Text);
+string selectedBillNumber = txtBillNumber.Text;
+string selectedBillDateDateFormat = txtBillDateDateFormat.Text;
+string selectedBillDate = txtBillDate.Text;
+string selectedProcuredDate = txtProcuredDate.Text;
+string selectedSalesChannel = txtSalesChannel.Text;
+string selectedWarehouseCode = txtWarehouseCode.Text;
+string selectedShipDate = txtShipDate.Text;
+string selectedDeliveryDate = txtDeliveryDate.Text;
+string selectedCurrencyCode = txtCurrencyCode.Text;
+string selectedSalesTeamID = txtSalesTeamID.Text;
+string selectedCustomerID = txtCustomerID.Text;
+string selectedStoreID = txtStoreID.Text;
+string selectedProductID = txtProductID.Text;
+string selectedOrderQuantity = txtOrderQuantity.Text;
+string selectedDiscountApplied = txtDiscountApplied.Text;
+string selectedUnitPrice = txtUnitPrice.Text;
+string selectedUnitCost = txtUnitCost.Text;
+string selectedGrossSales = txtGrossSales.Text;
+string selectedDiscountAmt = txtDiscountAmt.Text;
+string selectedNetSales = txtNetSales.Text;
+string selectedCostofSales = txtCostofSales.Text;
+
+// Add Parameter Columns using Seleted values:
+cmd.Parameters.AddWithValue("@ID", selectedID;
+cmd.Parameters.AddWithValue("@BillNumber", selectedBillNumber;
+cmd.Parameters.AddWithValue("@BillDateDateFormat", selectedBillDateDateFormat;
+cmd.Parameters.AddWithValue("@BillDate", selectedBillDate;
+cmd.Parameters.AddWithValue("@ProcuredDate", selectedProcuredDate;
+cmd.Parameters.AddWithValue("@SalesChannel", selectedSalesChannel;
+cmd.Parameters.AddWithValue("@WarehouseCode", selectedWarehouseCode;
+cmd.Parameters.AddWithValue("@ShipDate", selectedShipDate;
+cmd.Parameters.AddWithValue("@DeliveryDate", selectedDeliveryDate;
+cmd.Parameters.AddWithValue("@CurrencyCode", selectedCurrencyCode;
+cmd.Parameters.AddWithValue("@SalesTeamID", selectedSalesTeamID;
+cmd.Parameters.AddWithValue("@CustomerID", selectedCustomerID;
+cmd.Parameters.AddWithValue("@StoreID", selectedStoreID;
+cmd.Parameters.AddWithValue("@ProductID", selectedProductID;
+cmd.Parameters.AddWithValue("@OrderQuantity", selectedOrderQuantity;
+cmd.Parameters.AddWithValue("@DiscountApplied", selectedDiscountApplied;
+cmd.Parameters.AddWithValue("@UnitPrice", selectedUnitPrice;
+cmd.Parameters.AddWithValue("@UnitCost", selectedUnitCost;
+cmd.Parameters.AddWithValue("@GrossSales", selectedGrossSales;
+cmd.Parameters.AddWithValue("@DiscountAmt", selectedDiscountAmt;
+cmd.Parameters.AddWithValue("@NetSales", selectedNetSales;
+cmd.Parameters.AddWithValue("@CostofSales", selectedCostofSales;
+
+// Primarykey Column Initialization Code:
+string selectedID = txtID.Text;
+
+// Add Parameter Columns Using values directly from Windows Form:
+cmd.Parameters.AddWithValue("@ID", selectedID);
+cmd.Parameters.AddWithValue("@BillNumber", txtBillNumber.Text);
+cmd.Parameters.AddWithValue("@BillDateDateFormat", txtBillDateDateFormat.Text);
+cmd.Parameters.AddWithValue("@BillDate", txtBillDate.Text);
+cmd.Parameters.AddWithValue("@ProcuredDate", txtProcuredDate.Text);
+cmd.Parameters.AddWithValue("@SalesChannel", txtSalesChannel.Text);
+cmd.Parameters.AddWithValue("@WarehouseCode", txtWarehouseCode.Text);
+cmd.Parameters.AddWithValue("@ShipDate", txtShipDate.Text);
+cmd.Parameters.AddWithValue("@DeliveryDate", txtDeliveryDate.Text);
+cmd.Parameters.AddWithValue("@CurrencyCode", txtCurrencyCode.Text);
+cmd.Parameters.AddWithValue("@SalesTeamID", txtSalesTeamID.Text);
+cmd.Parameters.AddWithValue("@CustomerID", txtCustomerID.Text);
+cmd.Parameters.AddWithValue("@StoreID", txtStoreID.Text);
+cmd.Parameters.AddWithValue("@ProductID", txtProductID.Text);
+cmd.Parameters.AddWithValue("@OrderQuantity", txtOrderQuantity.Text);
+cmd.Parameters.AddWithValue("@DiscountApplied", txtDiscountApplied.Text);
+cmd.Parameters.AddWithValue("@UnitPrice", txtUnitPrice.Text);
+cmd.Parameters.AddWithValue("@UnitCost", txtUnitCost.Text);
+cmd.Parameters.AddWithValue("@GrossSales", txtGrossSales.Text);
+cmd.Parameters.AddWithValue("@DiscountAmt", txtDiscountAmt.Text);
+cmd.Parameters.AddWithValue("@NetSales", txtNetSales.Text);
+cmd.Parameters.AddWithValue("@CostofSales", txtCostofSales.Text);
+
+// Get Value of Primary Key and using it in the next code:
+string selectedID = txtID.Text;
+
+// Read Data Grid Values to Textbox in Windows Form
+txtID.Text = selectedID;
+txtBillNumber.Text = reader["BillNumber"].ToString();
+txtBillDateDateFormat.Text = reader["BillDateDateFormat"].ToString();
+txtBillDate.Text = reader["BillDate"].ToString();
+txtProcuredDate.Text = reader["ProcuredDate"].ToString();
+txtSalesChannel.Text = reader["SalesChannel"].ToString();
+txtWarehouseCode.Text = reader["WarehouseCode"].ToString();
+txtShipDate.Text = reader["ShipDate"].ToString();
+txtDeliveryDate.Text = reader["DeliveryDate"].ToString();
+txtCurrencyCode.Text = reader["CurrencyCode"].ToString();
+txtSalesTeamID.Text = reader["SalesTeamID"].ToString();
+txtCustomerID.Text = reader["CustomerID"].ToString();
+txtStoreID.Text = reader["StoreID"].ToString();
+txtProductID.Text = reader["ProductID"].ToString();
+txtOrderQuantity.Text = reader["OrderQuantity"].ToString();
+txtDiscountApplied.Text = reader["DiscountApplied"].ToString();
+txtUnitPrice.Text = reader["UnitPrice"].ToString();
+txtUnitCost.Text = reader["UnitCost"].ToString();
+txtGrossSales.Text = reader["GrossSales"].ToString();
+txtDiscountAmt.Text = reader["DiscountAmt"].ToString();
+txtNetSales.Text = reader["NetSales"].ToString();
+txtCostofSales.Text = reader["CostofSales"].ToString();
