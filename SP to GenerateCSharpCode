@@ -1,0 +1,261 @@
+USE [SuperStoreDB]
+GO
+/****** Object:  StoredProcedure [dbo].[GenerateCSharpCode_NEW]    Script Date: 09-07-2024 10:58:02 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[GenerateCSharpCode]
+	@TableName NVARCHAR(128), 
+	@DatabaseName NVARCHAR(128)
+AS
+BEGIN
+    DECLARE @SchemaName NVARCHAR(128) = 'dbo'
+	DECLARE @PrimaryKeyColumnName NVARCHAR(128)
+    
+
+	-- ##################################################################################
+    -- Temporary table to hold all the generated code
+		CREATE TABLE #AllGeneratedCode (CodeLine NVARCHAR(MAX));
+
+	-- ##################################################################################
+    -- Generate C# code for TextBox Naming
+	-- ##################################################################################
+		SELECT 
+			'txt' + COLUMN_NAME AS CodeLine
+		INTO #TextBoxNames
+		FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_NAME = @TableName
+			AND TABLE_SCHEMA = @SchemaName
+			AND TABLE_CATALOG = @DatabaseName;
+
+		-- Insert TextBox Names into the combined table
+		INSERT INTO #AllGeneratedCode (CodeLine)
+		SELECT '// TextBox Names:' UNION ALL
+		SELECT CodeLine FROM #TextBoxNames UNION ALL
+		SELECT '';
+
+	-- ##################################################################################
+    -- Generate C# code for TextBox Reset
+	-- ##################################################################################
+		SELECT 
+			'txt' + COLUMN_NAME + CASE 
+				WHEN DATA_TYPE = 'date' THEN '.Value = DateTime.Now;'
+				WHEN DATA_TYPE = 'int' THEN '.Text = "0";'
+				ELSE '.Text = string.Empty;'
+			END AS CodeLine
+		INTO #TextBoxReset
+		FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_NAME = @TableName
+			AND TABLE_SCHEMA = @SchemaName
+			AND TABLE_CATALOG = @DatabaseName;
+
+		-- Insert TextBox Reset Code into the combined table
+		INSERT INTO #AllGeneratedCode (CodeLine)
+		SELECT '// TextBox Reset Code:' UNION ALL
+		SELECT CodeLine FROM #TextBoxReset UNION ALL
+		SELECT '';
+
+	-- ##################################################################################
+	-- Generate C# code for Insert Query Column Names
+	-- ##################################################################################
+		SELECT STRING_AGG(COLUMN_NAME, ', ') AS CodeLine
+		INTO #InsertQueryColumns
+		FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_NAME = @TableName
+			AND TABLE_SCHEMA = @SchemaName
+			AND TABLE_CATALOG = @DatabaseName;
+
+		-- Insert Insert Query Columns into the combined table
+		INSERT INTO #AllGeneratedCode (CodeLine)
+		SELECT '// Insert Query Columns:' UNION ALL
+		SELECT CodeLine FROM #InsertQueryColumns UNION ALL
+		SELECT '';
+	
+	-- ##################################################################################
+    -- Generate C# code for Insert Query value Names
+	-- ##################################################################################
+		SELECT STRING_AGG('@' + COLUMN_NAME, ', ') AS CodeLine
+		INTO #InsertQueryParameters
+		FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_NAME = @TableName
+			AND TABLE_SCHEMA = @SchemaName
+			AND TABLE_CATALOG = @DatabaseName;
+
+		-- Insert Insert Query Parameters into the combined table
+		INSERT INTO #AllGeneratedCode (CodeLine)
+		SELECT '// Insert Query Value:' UNION ALL
+		SELECT CodeLine FROM #InsertQueryParameters UNION ALL
+		SELECT '';
+
+	-- ##################################################################################
+    -- Generate C# code for Update Query with Column Names
+	-- ##################################################################################
+		SELECT STRING_AGG(COLUMN_NAME + ' = @' + COLUMN_NAME, ', ') AS CodeLine
+		INTO #UpdateQueryColumns
+		FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_NAME = @TableName
+			AND TABLE_SCHEMA = @SchemaName
+			AND TABLE_CATALOG = @DatabaseName;
+
+		-- Insert Update Query Columns into the combined table
+		INSERT INTO #AllGeneratedCode (CodeLine)
+		SELECT '// Update Query Columns:' UNION ALL
+		SELECT CodeLine FROM #UpdateQueryColumns UNION ALL
+		SELECT '';
+
+
+	-- ##################################################################################
+    -- Generate C# code to Get all values from the Windows Form as string
+	-- ##################################################################################
+		SELECT 
+        CASE 
+            WHEN DATA_TYPE = 'date' THEN 'DateTime selected' + COLUMN_NAME + ' = ' + 'txt' + COLUMN_NAME + '.Value;'
+            WHEN DATA_TYPE = 'int' THEN 'int selected' + COLUMN_NAME + ' = int.Parse(txt' + COLUMN_NAME + '.Text);'
+            ELSE 'string selected' + COLUMN_NAME + ' = ' + 'txt' + COLUMN_NAME + '.Text;'
+        END AS CodeLine
+		INTO #InitializationCode
+		FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_NAME = @TableName
+			AND TABLE_SCHEMA = @SchemaName
+			AND TABLE_CATALOG = @DatabaseName;
+
+		-- Insert Initialization Code into the combined table
+		INSERT INTO #AllGeneratedCode (CodeLine)
+		SELECT '// All Columns Initialization Code:' UNION ALL
+		SELECT CodeLine FROM #InitializationCode UNION ALL
+		SELECT '';
+
+	-- ##################################################################################
+	-- Generate C# code to add parameters when you use string values 
+	-- ##################################################################################
+		SELECT 
+		'cmd.Parameters.AddWithValue("@' + COLUMN_NAME + '", selected' + COLUMN_NAME + ';'
+		AS CodeLine
+		INTO #AddParametersCodeUsingTextValue
+		FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_NAME = @TableName
+		  AND TABLE_SCHEMA = @SchemaName
+		  AND TABLE_CATALOG = @DatabaseName;
+
+    -- Insert Add Parameters Code into the combined table
+		INSERT INTO #AllGeneratedCode (CodeLine)
+		SELECT '// Add Parameter Columns using Seleted values:' UNION ALL
+		SELECT CodeLine FROM #AddParametersCodeUsingTextValue UNION ALL
+		SELECT '';
+
+
+	 -- ##################################################################################
+	 -- Generate C# code to Get only Primary key from Windows From as string
+	 -- ##################################################################################
+		SELECT @PrimaryKeyColumnName = CCU.COLUMN_NAME
+		FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC
+		INNER JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE AS CCU
+			ON TC.CONSTRAINT_NAME = CCU.CONSTRAINT_NAME
+		WHERE TC.TABLE_NAME = @TableName
+		  AND TC.TABLE_SCHEMA = @SchemaName
+		  AND TC.CONSTRAINT_TYPE = 'PRIMARY KEY';
+
+
+		  		PRINT 'Primary Key Column Name: ' + @PrimaryKeyColumnName;
+
+		SELECT 
+			'string selected' + @PrimaryKeyColumnName + ' = ' + 'txt' + @PrimaryKeyColumnName + '.Text;' AS CodeLine
+		INTO #PrimarykeyInitializationCode
+		FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_NAME = @TableName
+			AND TABLE_SCHEMA = @SchemaName
+			AND TABLE_CATALOG = @DatabaseName
+			AND COLUMN_NAME = @PrimaryKeyColumnName;
+
+		-- Insert Single Initialization Code into the combined table
+		INSERT INTO #AllGeneratedCode (CodeLine)
+		SELECT '// Primarykey Column Initialization Code:' UNION ALL
+		SELECT CodeLine FROM #PrimarykeyInitializationCode UNION ALL
+		SELECT '';
+
+	-- ##################################################################################
+	-- Generate C# code to add parameters while using Windows Form values dirctly 
+	-- ##################################################################################
+		SELECT 
+		CASE 
+			WHEN COLUMN_NAME = @PrimaryKeyColumnName THEN
+				'cmd.Parameters.AddWithValue("@' + COLUMN_NAME + '", selected' + COLUMN_NAME + ');'
+			WHEN DATA_TYPE = 'date' THEN 
+				'cmd.Parameters.AddWithValue("@' + COLUMN_NAME + '", txt' + COLUMN_NAME + '.Value);'
+			ELSE 
+				'cmd.Parameters.AddWithValue("@' + COLUMN_NAME + '", txt' + COLUMN_NAME + '.Text);'
+		END AS CodeLine
+		INTO #AddParametersCode
+		FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_NAME = @TableName
+		  AND TABLE_SCHEMA = @SchemaName
+		  AND TABLE_CATALOG = @DatabaseName;
+
+    -- Insert Add Parameters Code into the combined table
+		INSERT INTO #AllGeneratedCode (CodeLine)
+		SELECT '// Add Parameter Columns Using values directly from Windows Form:' UNION ALL
+		SELECT CodeLine FROM #AddParametersCode UNION ALL
+		SELECT '';
+
+
+	-- ##################################################################################
+	-- Generate C# code to Read Data Grid Value to Textbox on Windows Form
+	-- ##################################################################################
+	
+		SELECT 
+			'string selected' + COLUMN_NAME + ' = ' + 'txt' + COLUMN_NAME + '.Text;' AS CodeLine
+		INTO #GetValueofPrimaryKey
+		FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_NAME = @TableName
+			AND TABLE_SCHEMA = @SchemaName
+			AND TABLE_CATALOG = @DatabaseName
+			AND COLUMN_NAME = @PrimaryKeyColumnName;
+
+		-- Insert Single Initialization Code into the combined table
+		INSERT INTO #AllGeneratedCode (CodeLine)
+		SELECT '// Get Value of Primary Key and using it in the next code:' UNION ALL
+		SELECT CodeLine FROM #GetValueofPrimaryKey UNION ALL
+		SELECT '';
+
+		SELECT 
+		CASE WHEN COLUMN_NAME = @PrimaryKeyColumnName THEN
+			'txt' + @PrimaryKeyColumnName + '.Text = selected' + @PrimaryKeyColumnName +';'
+		ELSE
+			'txt' + COLUMN_NAME + '.Text = reader["'+ COLUMN_NAME + '"].ToString();'
+		END AS CodeLine
+		INTO #ReadDataGridValueValuesToTextBox
+		FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_NAME = @TableName
+		  AND TABLE_SCHEMA = @SchemaName
+		  AND TABLE_CATALOG = @DatabaseName;
+
+    -- Insert Add Parameters Code into the combined table
+		INSERT INTO #AllGeneratedCode (CodeLine)
+		SELECT '// Read Data Grid Values to Textbox in Windows Form' UNION ALL
+		SELECT CodeLine FROM #ReadDataGridValueValuesToTextBox UNION ALL
+		SELECT '';
+		
+
+	-- ##################################################################################
+    -- Select the final combined result
+	-- ##################################################################################
+		SELECT CodeLine FROM #AllGeneratedCode;
+
+	-- ##################################################################################
+    -- Clean up
+	-- ##################################################################################
+		DROP TABLE #TextBoxNames
+		DROP TABLE #TextBoxReset
+		DROP TABLE #InitializationCode
+		DROP TABLE #PrimarykeyInitializationCode
+		DROP TABLE #InsertQueryParameters
+		DROP TABLE #InsertQueryColumns
+		DROP TABLE #UpdateQueryColumns
+		DROP TABLE #AddParametersCode
+		DROP TABLE #AddParametersCodeUsingTextValue
+		DROP TABLE #GetValueofPrimaryKey
+		DROP TABLE #ReadDataGridValueValuesToTextBox
+		DROP TABLE #AllGeneratedCode
+END
